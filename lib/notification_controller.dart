@@ -15,15 +15,11 @@ class NotificationService {
           channelDescription: 'Notification channel for basic tests',
           defaultColor: const Color(0xFF9D50DD),
           ledColor: Colors.white,
-
           enableVibration: true,
           vibrationPattern: highVibrationPattern,
           importance: NotificationImportance.Max,
-
-          onlyAlertOnce: true,
-          // playSound: true,
-
-          // soundSource: 'resource://raw/notif',
+          playSound: true,
+          soundSource: 'resource://raw/notif',
         )
       ],
       channelGroups: [
@@ -33,6 +29,13 @@ class NotificationService {
         )
       ],
       debug: true,
+    );
+    await AwesomeNotifications().isNotificationAllowed().then(
+      (isAllowed) async {
+        if (!isAllowed) {
+          await AwesomeNotifications().requestPermissionToSendNotifications();
+        }
+      },
     );
 
     await AwesomeNotifications().setListeners(

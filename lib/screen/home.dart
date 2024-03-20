@@ -34,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
     _selectedDate = DateTime.now();
     _calculatePrayerTimes(_selectedDate);
     _schedulePrayerTimeNotifications();
@@ -271,8 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           NotificationService.scheduleNotification(
                               title: 'title',
                               body: 'body',
-                              scheduledDate: DateTime.now()
-                                  .add(const Duration(seconds: 5)));
+                              scheduledDate: _prayerTimesSelectedDate.maghrib);
                         },
                         child: _prayerTimeCard(
                             'Fajr', _prayerTimesSelectedDate.fajr, 0),
