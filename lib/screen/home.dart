@@ -74,10 +74,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _schedulePrayerTimeNotification(String prayerName, DateTime prayerTime) {
     // Schedule notification using NotificationService
-    NotificationService.scheduleNotification(
+    NotificationService.showNotification(
       title: 'Prayer Time Reminder',
       body: 'It\'s time for $prayerName prayer.',
-      scheduledDate: prayerTime,
+      schedule: prayerTime,
     );
   }
 
@@ -267,16 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Column(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          NotificationService.scheduleNotification(
-                              title: 'title',
-                              body: 'body',
-                              scheduledDate: _prayerTimesSelectedDate.maghrib);
-                        },
-                        child: _prayerTimeCard(
-                            'Fajr', _prayerTimesSelectedDate.fajr, 0),
-                      ),
+                      _prayerTimeCard('Fajr', _prayerTimesSelectedDate.fajr, 0),
                       _prayerTimeCard(
                           'Sunrise', _prayerTimesSelectedDate.sunrise, 1),
                       _prayerTimeCard(
@@ -330,7 +321,8 @@ class _HomeScreenState extends State<HomeScreen> {
     } else if (_prayerTimesCurrentDay.asr
         .subtract(const Duration(hours: 1))
         .isAfter(now)) {
-      nextPrayerTime = _prayerTimesCurrentDay.asr;
+      nextPrayerTime =
+          _prayerTimesCurrentDay.asr.subtract(const Duration(hours: 1));
     } else if (_prayerTimesCurrentDay.maghrib.isAfter(now)) {
       nextPrayerTime = _prayerTimesCurrentDay.maghrib;
     } else if (_prayerTimesCurrentDay.isha.isAfter(now)) {

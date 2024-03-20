@@ -9,27 +9,31 @@ class NotificationService {
       null,
       [
         NotificationChannel(
-          channelGroupKey: 'prayer_time_channel_group',
-          channelKey: 'scheduled_channel',
-          channelName: 'App notifications',
+          channelGroupKey: 'high_importance_channel',
+          channelKey: 'high_importance_channel',
+          channelName: 'Basic notifications',
           channelDescription: 'Notification channel for basic tests',
           defaultColor: const Color(0xFF9D50DD),
           ledColor: Colors.white,
+          importance: NotificationImportance.Max,
+          channelShowBadge: true,
+          onlyAlertOnce: true,
+          playSound: true,
           enableVibration: true,
           vibrationPattern: highVibrationPattern,
-          importance: NotificationImportance.Max,
-          playSound: true,
           soundSource: 'resource://raw/notif',
+          criticalAlerts: true,
         )
       ],
       channelGroups: [
         NotificationChannelGroup(
-          channelGroupKey: 'prayer_time_channel_group',
+          channelGroupKey: 'high_importance_channel_group',
           channelGroupName: 'Group 1',
         )
       ],
       debug: true,
     );
+
     await AwesomeNotifications().isNotificationAllowed().then(
       (isAllowed) async {
         if (!isAllowed) {
@@ -46,21 +50,25 @@ class NotificationService {
     );
   }
 
+  /// Use this method to detect when a new notification or a schedule is created
   static Future<void> onNotificationCreatedMethod(
       ReceivedNotification receivedNotification) async {
     debugPrint('onNotificationCreatedMethod');
   }
 
+  /// Use this method to detect every time that a new notification is displayed
   static Future<void> onNotificationDisplayedMethod(
       ReceivedNotification receivedNotification) async {
     debugPrint('onNotificationDisplayedMethod');
   }
 
+  /// Use this method to detect if the user dismissed a notification
   static Future<void> onDismissActionReceivedMethod(
       ReceivedAction receivedAction) async {
     debugPrint('onDismissActionReceivedMethod');
   }
 
+  /// Use this method to detect when the user taps on a notification or action button
   static Future<void> onActionReceivedMethod(
       ReceivedAction receivedAction) async {
     debugPrint('onActionReceivedMethod');
@@ -74,25 +82,38 @@ class NotificationService {
     }
   }
 
-  static Future<void> scheduleNotification({
-    required String title,
-    required String body,
-    required DateTime scheduledDate,
+  static Future<void> showNotification({
+    required final String title,
+    required final String body,
+    final String? summary,
+    final Map<String, String>? payload,
+    final ActionType actionType = ActionType.Default,
+    final NotificationLayout notificationLayout = NotificationLayout.Default,
+    final NotificationCategory? category,
+    final String? bigPicture,
+    final List<NotificationActionButton>? actionButtons,
+    final bool scheduled = false,
+    final int? interval,
+    required DateTime schedule,
   }) async {
+    assert(!scheduled || (scheduled && interval != null));
+
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
-        id: 0,
-        channelKey: 'scheduled_channel',
+        id: -1,
+        channelKey: 'high_importance_channel',
         title: title,
         body: body,
+        actionType: actionType,
+        notificationLayout: notificationLayout,
+        summary: summary,
+        category: category,
+        payload: payload,
+        bigPicture: bigPicture,
       ),
-      schedule: NotificationCalendar(
-        weekday: scheduledDate.weekday,
-        hour: scheduledDate.hour,
-        minute: scheduledDate.minute,
-        second: scheduledDate.second,
-        allowWhileIdle: true,
-      ),
+      actionButtons: actionButtons,
+      schedule:
+          NotificationCalendar.fromDate(date: schedule, preciseAlarm: true),
     );
   }
 }
