@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:adhan/adhan.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -78,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
       title: 'Prayer Time Reminder',
       body: 'It\'s time for $prayerName prayer.',
       schedule: prayerTime,
+      payload: {'navigate': 'true'},
     );
   }
 
@@ -328,9 +330,12 @@ class _HomeScreenState extends State<HomeScreen> {
     } else if (_prayerTimesCurrentDay.isha.isAfter(now)) {
       nextPrayerTime = _prayerTimesCurrentDay.isha;
     } else {
-      // If none of the prayer times are after the current time,
-      // set the next prayer time to the Fajr of the next day
-      nextPrayerTime = _prayerTimesCurrentDay.fajr.add(const Duration(days: 1));
+      // If all prayer times for the day have passed, schedule notifications for the next day
+      final tomorrow = DateTime(now.year, now.month, now.day + 1);
+      _calculatePrayerTimes(
+          tomorrow); // Recalculate prayer times for the next day
+      _schedulePrayerTimeNotifications(); // Schedule notifications for the next day
+      return 'Next Prayer: ${_getNextPrayerName()}'; // Return a message indicating scheduling for the next day
     }
 
     final remainingTime = nextPrayerTime.difference(now);

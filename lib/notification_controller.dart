@@ -60,6 +60,14 @@ class NotificationService {
   static Future<void> onNotificationDisplayedMethod(
       ReceivedNotification receivedNotification) async {
     debugPrint('onNotificationDisplayedMethod');
+    final payload = receivedNotification.payload ?? {};
+    if (payload["navigate"] == "true") {
+      MainApp.navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => const SecondScreen(),
+        ),
+      );
+    }
   }
 
   /// Use this method to detect if the user dismissed a notification
@@ -72,14 +80,6 @@ class NotificationService {
   static Future<void> onActionReceivedMethod(
       ReceivedAction receivedAction) async {
     debugPrint('onActionReceivedMethod');
-    final payload = receivedAction.payload ?? {};
-    if (payload["navigate"] == "true") {
-      MainApp.navigatorKey.currentState?.push(
-        MaterialPageRoute(
-          builder: (_) => const SecondScreen(),
-        ),
-      );
-    }
   }
 
   static Future<void> showNotification({
